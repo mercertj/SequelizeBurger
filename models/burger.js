@@ -19,13 +19,8 @@ module.exports = function(sequelize, DataTypes) {
     }
   });
 
-  newBurgers.associate = models => {
-    newBurgers.belongsTo(models.Author, {
-      foreignKey: {
-        allowNull: false
-      }
-    })
-  }
-
   return newBurgers;
+
 };
+
+  
