@@ -1,40 +1,45 @@
 var express = require("express");
 
 var router = express.Router();
-var burger = require("../models/burger.js");
+var db = require("../models/");
 
 // get route -> index
 router.get("/", function(req, res) {
-  res.redirect("/burgers");
+    res.redirect("/burgers");
 });
 
 router.get("/burgers", function(req, res) {
-  // express callback response by calling burger.selectAllBurger
-  burger.all(function(burgerData) {
-    // wrapper for orm.js that using MySQL query callback will return burger_data, render to index with handlebar
-    res.render("index", { burger_data: burgerData });
-  });
+    // express callback response by calling burger.selectAllBurger
+    db.Burger.findAll().then(function(dbBurger) {
+        var hbsObject = { burger: dbBurger };
+        return res.render("index", hbsObject);
+    });
 });
 
 // post route -> back to index
 router.post("/burgers/create", function(req, res) {
-  // takes the request object using it as input for buger.addBurger
-  burger.create(req.body.burger_name, function(result) {
-    // wrapper for orm.js that using MySQL insert callback will return a log to console,
-    // render back to index with handle
-    console.log(result);
-    res.redirect("/");
-  });
+    // takes the request object using it as input for buger.addBurger
+    dbBurger.create({
+        burger_name: req.body.burger_name,
+        devoured: req.body.devoured
+    }).then(function(Burger) {
+        res.redirect("/");
+
+    });
 });
 
 // put route -> back to index
 router.put("/burgers/update", function(req, res) {
-  burger.update(req.body.burger_id, function(result) {
-    // wrapper for orm.js that using MySQL update callback will return a log to console,
-    // render back to index with handle
-    console.log(result);
-    res.redirect("/");
-  });
+    dbBurger.update({
+        devoured: false
+    }, {
+        where: {
+            id: req.body.burger_id
+        }
+    }).then(function(dbBurger) {
+        res.redirect("/");
+
+    });
 });
 
 module.exports = router;
